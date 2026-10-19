@@ -2,7 +2,8 @@
 (function () {
     'use strict';
 
-    const API = 'http://localhost:8000/api';
+    // API en la MISMA origen que la página (nginx, artisan serve, o cualquier puerto)
+    const API = window.location.origin + '/api';
     let token = localStorage.getItem('token') || '';
 
     const $ = (sel) => document.querySelector(sel);
@@ -202,8 +203,12 @@
         $('#tab-' + nombre).classList.remove('hidden');
     }
 
-    document.querySelectorAll('.tab').forEach((t) =>
-        t.addEventListener('click', () => abrirTab(t.dataset.tab)));
+    // Delegación de eventos: los clicks en .tab se manejan a nivel document,
+    // así los botones funcionan aunque se recargue/re-renderice el contenedor
+    document.addEventListener('click', (e) => {
+        const trigger = e.target.closest ? e.target.closest('.tab') : null;
+        if (trigger) abrirTab(trigger.dataset.tab);
+    });
 
     /* ============ Arranque ============ */
     async function iniciar() {

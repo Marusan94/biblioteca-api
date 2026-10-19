@@ -68,6 +68,6 @@
 </main>
 
 <div id="toast" class="hidden"></div>
-<script src="/js/app.js"></script>
+<script src="/js/app.js?v=3"></script>
 </body>
 </html>
