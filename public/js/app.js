@@ -298,7 +298,51 @@
         await cargarSelects();
     }
 
-    /* ============ Dashboard con estadísticas ============ */
+    /* ============ Dashboard con estadísticas + gráficos ============ */
+    let chartMeses = null;
+    let chartTop = null;
+
+    function dibujarGraficos(g) {
+        if (!window.Chart) {
+            $('#sin-graficos').hidden = false;
+            return;
+        }
+        $('#sin-graficos').hidden = true;
+
+        const estilos = getComputedStyle(document.documentElement);
+        const verde = estilos.getPropertyValue('--accent').trim() || '#2fa37c';
+        const azul = '#7c8ea8';
+
+        if (chartMeses) chartMeses.destroy();
+        chartMeses = new Chart($('#g-meses'), {
+            type: 'bar',
+            data: {
+                labels: g.prestamos_por_mes.labels,
+                datasets: [{ label: 'Préstamos', data: g.prestamos_por_mes.datos, backgroundColor: verde }]
+            },
+            options: {
+                responsive: true,
+                plugins: { legend: { display: false } },
+                scales: { y: { ticks: { precision: 0 } } }
+            }
+        });
+
+        if (chartTop) chartTop.destroy();
+        chartTop = new Chart($('#g-top'), {
+            type: 'bar',
+            data: {
+                labels: g.top_libros.labels,
+                datasets: [{ label: 'Veces prestado', data: g.top_libros.datos, backgroundColor: azul }]
+            },
+            options: {
+                responsive: true,
+                indexAxis: 'y',
+                plugins: { legend: { display: false } },
+                scales: { y: { ticks: { precision: 0 } } }
+            }
+        });
+    }
+
     async function cargarDashboard() {
         const res = await call('/estadisticas');
         const d = res.data;
@@ -314,7 +358,31 @@
         $('#stats').innerHTML = tarjetas
             .map(([n, v]) => '<div class="stat"><b>' + v + '</b><span>' + n + '</span></div>')
             .join('');
+
+        if (d.graficos) dibujarGraficos(d.graficos);
     }
+
+    /* ============ Exportar CSV (mejoras) ============ */
+    async function descargarCsv() {
+        try {
+            const r = await fetch(API + '/mis-prestamos/exportar', {
+                headers: { Accept: 'text/csv', Authorization: 'Bearer ' + token }
+            });
+            if (!r.ok) throw new Error('descarga');
+            const blob = await r.blob();
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = 'prestamos_' + new Date().toISOString().slice(0, 10) + '.csv';
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            URL.revokeObjectURL(a.href);
+            toast('✅ CSV descargado');
+        } catch (e) {
+            toast('❌ No se pudo descargar el CSV');
+        }
+    }
+    $('#btn-csv').addEventListener('click', descargarCsv);
 
     /* ============ Asistente / chatbot local ============ */
     function burbuja(texto, quien) {

@@ -9,6 +9,7 @@ use App\Models\Prestamo;
 use App\Services\PrestamoService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class PrestamoController extends Controller
 {
@@ -73,6 +74,48 @@ class PrestamoController extends Controller
         }
 
         return response()->json(['data' => $prestamo->load('libro', 'usuario')], 201);
+    }
+
+    /**
+     * GET /api/mis-prestamos/exportar - descarga CSV del historial
+     * de préstamos del usuario autenticado.
+     */
+    public function exportarCsv(Request $request): StreamedResponse
+    {
+        $nombre = 'prestamos_' . now()->toDateString() . '.csv';
+
+        $responseHeaders = [
+            'Content-Type' => 'text/csv; charset=UTF-8',
+            'Content-Disposition' => 'attachment; filename="' . $nombre . '"',
+        ];
+
+        $usuarioId = $request->user()->id;
+
+        $callback = function () use ($usuarioId) {
+            // BOM para que Excel lea bien los acentos.
+            echo "\xEF\xBB\xBF";
+            $salida = fopen('php://output', 'wb');
+            fputcsv($salida, ['Libro', 'Estado', 'Fecha de préstamo', 'Devolución estimada', 'Devolución real']);
+
+            Prestamo::query()
+                ->where('usuario_id', $usuarioId)
+                ->with('libro:id,titulo')
+                ->orderByDesc('fecha_prestamo')
+                ->get(['id', 'libro_id', 'estado', 'fecha_prestamo', 'fecha_devolucion_estimada', 'fecha_devolucion_real'])
+                ->each(function (Prestamo $p) use ($salida) {
+                    fputcsv($salida, [
+                        $p->libro->titulo,
+                        $p->estado,
+                        (string) $p->fecha_prestamo,
+                        (string) $p->fecha_devolucion_estimada,
+                        (string) ($p->fecha_devolucion_real ?? ''),
+                    ]);
+                });
+
+            fclose($salida);
+        };
+
+        return new StreamedResponse($callback, 200, $responseHeaders);
     }
 
     /**

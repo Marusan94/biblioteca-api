@@ -24,6 +24,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('/prestamos', [PrestamoController::class, 'index']);
     Route::get('/mis-prestamos', [PrestamoController::class, 'misPrestamos']);
+    Route::get('/mis-prestamos/exportar', [PrestamoController::class, 'exportarCsv']);
     Route::post('/prestamos', [PrestamoController::class, 'store']);
     Route::put('/prestamos/{prestamo}/devolver', [PrestamoController::class, 'devolver']);
 

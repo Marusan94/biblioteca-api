@@ -4,7 +4,8 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Biblioteca</title>
-    <link rel="stylesheet" href="/css/app.css?v=5">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<link rel="stylesheet" href="/css/app.css?v=6">
     <script>/* aplica el tema guardado ANTES de pintar para evitar flash */
         document.documentElement.dataset.theme = localStorage.getItem('tema') || 'claro';</script>
 </head>
@@ -78,6 +79,7 @@
                     <option value="devuelto">Devueltos</option>
                 </select>
             </label>
+            <button id="btn-csv" class="mini" title="Descargar historial en CSV">⬇ Descargar CSV</button>
         </div>
         <table id="tabla-mis">
             <thead>
@@ -106,9 +108,20 @@
         </form>
     </section>
 
-    <!-- Dashboard con estadísticas (6.1) -->
+    <!-- Dashboard con estadísticas (6.1) + gráficos (mejoras) -->
     <section id="tab-dashboard" class="tab-panel hidden">
         <div id="stats" class="stats"></div>
+        <div class="graficos">
+            <div class="card chart-card">
+                <h3>Préstamos por mes</h3>
+                <canvas id="g-meses"></canvas>
+            </div>
+            <div class="card chart-card">
+                <h3>Top libros más prestados</h3>
+                <canvas id="g-top"></canvas>
+            </div>
+        </div>
+        <p id="sin-graficos" class="muted" hidden>Los gráficos necesitan conexión (Chart.js por CDN).</p>
     </section>
 </main>
 
@@ -138,6 +151,6 @@
 </section>
 
 <div id="toast" class="hidden"></div>
-<script src="/js/app.js?v=5"></script>
+<script src="/js/app.js?v=6"></script>
 </body>
 </html>

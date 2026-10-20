@@ -75,6 +75,8 @@ Todos los entregables que no son codigo del proyecto estan en la carpeta [docs/]
 - Filtros combinables de libros (autor + año + disponibilidad + ordenación).
 - Asistente integrado (chatbot local que consulta la BD real, sin servicios externos).
 - Modo oscuro con persistencia en `localStorage` y spinners de carga.
+- Dashboard con gráficos: préstamos por mes y top libros más prestados (Chart.js).
+- Descarga en `CSV` del historial en la pestaña «Mis préstamos».
 
 ## Capturas (validación visual)
 
@@ -94,6 +96,8 @@ La carpeta [docs/capturas/](docs/capturas/) contiene las pantallas de la app par
 | ![Filtros](docs/capturas/10_filtros.png) `10_filtros.png` | Filtros combinables de libros: autor + año + disponibilidad + ordenación |
 | ![Asistente](docs/capturas/11_chatbot.png) `11_chatbot.png` | Asistente integrado (chatbot local sobre la BD): disponibilidad, «mis préstamos», «catálogo» |
 | ![Modo oscuro](docs/capturas/12_modo_oscuro.png) `12_modo_oscuro.png` | Tema oscuro con persistencia en `localStorage` |
+| ![Dashboard con gráficos](docs/capturas/13_dashboard_graficos.png) `13_dashboard_graficos.png` | Dashboard con gráficos: préstamos por mes y top libros más prestados (Chart.js) |
+_dashboard_graficos.png\ | Dashboard con gráficos: préstamos por mes y top libros más prestados, gracias a Chart.js |
 
 El diagrama entidad-relación está en [docs/01_sql_y_diagramas/diagrama_er.png](docs/01_sql_y_diagramas/diagrama_er.png).
 
