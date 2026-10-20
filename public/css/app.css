@@ -15,7 +15,7 @@
     --warn: #d4a017;
     --ok: #1c7c3a;
 }
-body[data-theme="dark"] {
+:root[data-theme="dark"] {
     --bg: #12181c;
     --surface: #1b232a;
     --text: #e6eaed;

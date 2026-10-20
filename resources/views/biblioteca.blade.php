@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Biblioteca</title>
-    <link rel="stylesheet" href="/css/app.css">
+    <link rel="stylesheet" href="/css/app.css?v=5">
     <script>/* aplica el tema guardado ANTES de pintar para evitar flash */
         document.documentElement.dataset.theme = localStorage.getItem('tema') || 'claro';</script>
 </head>
@@ -138,6 +138,6 @@
 </section>
 
 <div id="toast" class="hidden"></div>
-<script src="/js/app.js?v=4"></script>
+<script src="/js/app.js?v=5"></script>
 </body>
 </html>
