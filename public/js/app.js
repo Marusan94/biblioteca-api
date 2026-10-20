@@ -90,10 +90,13 @@
     }
     $('#btn-salir').addEventListener('click', logout);
 
-    // El «Salir» solo tiene sentido con sesión activa: lo ocultamos si la pestaña
-    // principal (#app) está oculta (sin login).
+    // El «Salir» y el asistente solo tienen sentido con sesión activa:
+    // los ocultamos si la pestaña principal (#app) está oculta (sin login).
     function refrescaSalir() {
-        $('#btn-salir').classList.toggle('hidden', $('#app').classList.contains('hidden'));
+        const sinSesion = $('#app').classList.contains('hidden');
+        $('#btn-salir').classList.toggle('hidden', sinSesion);
+        $('#btn-chat').classList.toggle('hidden', sinSesion);
+        if (sinSesion) $('#chat').classList.add('hidden');
     }
     refrescaSalir();
 
