@@ -1,9 +1,9 @@
-﻿# Biblioteca API â€” Laravel + PostgreSQL (+ frontend Blade/JS)
+﻿# Biblioteca API Laravel + PostgreSQL (+ frontend Blade/JS)
 
-Sistema de gestiÃ³n de biblioteca (prueba tÃ©cnica): API REST autenticada con Sanctum,
+Sistema de gestión de biblioteca: API REST autenticada con Sanctum,
 reglas de negocio de prÃ©stamos y una interfaz web bÃ¡sica en Blade + JS vanilla.
 
-## InstalaciÃ³n
+## Instalación
 
 ```bash
 composer install
@@ -15,10 +15,10 @@ php artisan migrate --seed
 php artisan serve    # http://localhost:8000
 ```
 
-- Login demo (web y API): `usuario1@example.com` / `password` (los 15 usuarios comparten contraseÃ±a de demo; el usuario 15 estÃ¡ inactivo).
-- Si tu PostgreSQL estÃ¡ en otro puerto, ajusta `DB_PORT`.
+- Login demo (web y API): `usuario1@example.com` / `password` (los 15 usuarios comparten contraseña de demo; el usuario 15 esta¡ inactivo).
+- Si tu PostgreSQL esta¡ en otro puerto, ajusta `DB_PORT`.
 
-## Comandos Ãºtiles
+## Comandos útiles
 
 ```bash
 php artisan prestamos:marcar-vencidos   # marca vencidos (mÃ¡s de 15 dÃ­as de retraso)
@@ -43,9 +43,9 @@ Todos los endpoints requieren `Authorization: Bearer <token>` salvo `POST /api/l
 Reglas de negocio: sin stock no se presta; mÃ¡ximo 3 prÃ©stamos activos por usuario;
 solo usuarios activos prestan; vencidos (+15 dÃ­as) se marcan automÃ¡ticamente.
 
-Front: `http://localhost:8000` (bÃºsqueda en tiempo real, prÃ©stamos y dashboard).
+Front: `http://localhost:8000` (búsqueda en tiempo real, préstamos y dashboard).
 
-Postman: colecciÃ³n `Parte 7 â€” Postman` en la carpeta superior.
+Postman: colección `Parte 7 ” Postman` en la carpeta superior.
 
 ## Entregables (docs/)
 
