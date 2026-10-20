@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\Api\AsistenteController;
+use App\Http\Controllers\Api\AutorController;
 use App\Http\Controllers\Api\EstadisticaController;
 use App\Http\Controllers\Api\LibroController;
 use App\Http\Controllers\Api\LoginController;
@@ -21,9 +23,12 @@ Route::middleware('auth:sanctum')->group(function () {
         ->only(['index', 'show', 'store', 'update', 'destroy']);
 
     Route::get('/prestamos', [PrestamoController::class, 'index']);
+    Route::get('/mis-prestamos', [PrestamoController::class, 'misPrestamos']);
     Route::post('/prestamos', [PrestamoController::class, 'store']);
     Route::put('/prestamos/{prestamo}/devolver', [PrestamoController::class, 'devolver']);
 
     Route::get('/estadisticas', [EstadisticaController::class, 'index']);
     Route::get('/usuarios', [\App\Http\Controllers\Api\UsuarioController::class, 'index']);
+    Route::get('/autores', [AutorController::class, 'index']);
+    Route::post('/asistente', [AsistenteController::class, 'responder']);
 });

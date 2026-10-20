@@ -5,8 +5,21 @@
     // API en la MISMA origen que la página (nginx, artisan serve, o cualquier puerto)
     const API = window.location.origin + '/api';
     let token = localStorage.getItem('token') || '';
+    let cacheLibros = [];   // para el modal de detalle (3)
+    let usuarioId = null;   // usuario autenticado (para "mis préstamos")
 
     const $ = (sel) => document.querySelector(sel);
+
+    /* ============ Tema claro/oscuro (4) ============ */
+    function aplicarTema(tema) {
+        document.documentElement.dataset.theme = tema;
+        localStorage.setItem('tema', tema);
+        $('#btn-tema').textContent = tema === 'dark' ? '☀️' : '🌙';
+    }
+    $('#btn-tema').addEventListener('click', () => {
+        aplicarTema(document.documentElement.dataset.theme === 'dark' ? 'claro' : 'dark');
+    });
+    aplicarTema(document.documentElement.dataset.theme || 'claro');
 
     /* ============ Cliente AJAX con manejo de errores (6.2) ============ */
     async function call(path, options = {}) {
@@ -45,11 +58,11 @@
 
     /* ============ Validación del lado cliente (6.2) ============ */
     function validarFormulario() {
-        const usuarioId = $('#sel-usuario').value;
+        const usuarioIdSel = $('#sel-usuario').value;
         const libroId = $('#sel-libro').value;
         const fecha = $('#fecha_estimada').value;
 
-        if (!usuarioId) return 'Selecciona un usuario.';
+        if (!usuarioIdSel) return 'Selecciona un usuario.';
         if (!libroId) return 'Selecciona un libro.';
         if (!fecha) return 'Indica la fecha estimada.';
         if (fecha < new Date().toISOString().slice(0, 10)) {
@@ -63,6 +76,7 @@
     async function login(email, password) {
         const res = await call('/login', { method: 'POST', body: { email, password } });
         token = res.token;
+        usuarioId = res.user && res.user.id;
         localStorage.setItem('token', token);
         $('#login-box').classList.add('hidden');
         $('#app').classList.remove('hidden');
@@ -75,14 +89,26 @@
         location.reload();
     }
 
-    /* ============ Libros con búsqueda en tiempo real ============ */
+    /* ============ Libros: búsqueda + filtros combinables (5) ============ */
     let timerBusqueda = null;
 
+    function filaSkeleton(tbody, columnas) {
+        tbody.innerHTML = '<tr class="skeleton"><td colspan="' + columnas + '">⏳ Cargando…</td></tr>';
+    }
+
     async function cargarLibros() {
-        const titulo = $('#buscar').value.trim();
-        const params = titulo ? '?titulo=' + encodeURIComponent(titulo) : '';
-        const res = await call('/libros' + params);
-        const cuerpo = $('#tabla-libros').querySelector('tbody'); // filas
+        const p = new URLSearchParams();
+        if ($('#buscar').value.trim()) p.set('titulo', $('#buscar').value.trim());
+        if ($('#f-autor').value) p.set('autor_id', $('#f-autor').value);
+        if ($('#f-anio').value) p.set('anio', $('#f-anio').value);
+        if ($('#f-dispo').checked) p.set('disponibles', '1');
+        p.set('orden', $('#f-orden').value || 'titulo_asc');
+
+        const cuerpo = $('#tabla-libros').querySelector('tbody');
+        filaSkeleton(cuerpo, 6);
+
+        const res = await call('/libros?' + p.toString());
+        cacheLibros = res.data;
 
         cuerpo.innerHTML = '';
         $('#sin-resultados').hidden = res.data.length > 0;
@@ -103,7 +129,8 @@
                 const btn = document.createElement('button');
                 btn.textContent = 'Prestar';
                 btn.className = 'mini';
-                btn.addEventListener('click', () => {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
                     abrirTab('prestamos');
                     $('#sel-libro').value = libro.id;
                 });
@@ -114,14 +141,109 @@
                 fila.insertAdjacentHTML('beforeend', '<td class="muted">sin stock</td>');
             }
 
+            fila.addEventListener('click', () => mostrarDetalle(libro));
+            cuerpo.appendChild(fila);
+        });
+
+        // años disponibles para el filtro (solo la primera carga llena el select)
+        const selAnio = $('#f-anio');
+        if (selAnio.options.length <= 1 && res.meta && res.meta.anios) {
+            res.meta.anios.forEach((a) => {
+                selAnio.insertAdjacentHTML('beforeend', '<option value="' + a + '">' + a + '</option>');
+            });
+        }
+    }
+
+    ['#buscar', '#f-autor', '#f-anio', '#f-dispo', '#f-orden'].forEach((sel) => {
+        $(sel).addEventListener($('#buscar') === $(sel) ? 'input' : 'change', () => {
+            clearTimeout(timerBusqueda);
+            timerBusqueda = setTimeout(cargarLibros, $('#buscar') === $(sel) ? 300 : 0);
+        });
+    });
+
+    /* ============ Modal detalle de libro (3) ============ */
+    async function mostrarDetalle(libro) {
+        try {
+            const res = await call('/libros/' + libro.id);
+            const l = res.data;
+            const autores = (l.autores || [])
+                .map((a, i) => '<div class="detalle-fila"><b>Autor ' + (i + 1) + '</b>' + a.nombre + ' ' + a.apellido + '</div>')
+                .join('');
+
+            $('#modal-titulo').textContent = '📗 ' + l.titulo;
+            $('#modal-libro').innerHTML =
+                '<div class="detalle-fila"><b>Autores (en orden de firma)</b>' + (autores || '—') + '</div>' +
+                '<div class="detalle-fila"><b>ISBN</b>' + (l.isbn || '—') + '</div>' +
+                '<div class="detalle-fila"><b>Año de publicación</b>' + l.anio_publicacion + '</div>' +
+                '<div class="detalle-fila"><b>Stock disponible</b>' + l.stock_disponible + ' copia(s)</div>' +
+                '<div class="detalle-fila"><b>Estado</b>' + (l.stock_disponible > 0 ? '✅ Disponible para préstamo' : '⛔ Sin stock') + '</div>';
+            $('#modal').classList.remove('hidden');
+        } catch (err) {
+            toast('⚠️ ' + err.message, false);
+        }
+    }
+
+    $('#cerrar-modal').addEventListener('click', () => $('#modal').classList.add('hidden'));
+    $('#modal').addEventListener('click', (e) => {
+        if (e.target === e.currentTarget) $('#modal').classList.add('hidden');
+    });
+
+    /* ============ Mis préstamos (2) ============ */
+    const ETIQUETAS = { activo: '🟢 activo', vencido: '🔴 vencido', devuelto: '✔ devuelto' };
+
+    async function cargarMisPrestamos() {
+        const estado = $('#f-estado-mis').value;
+        const p = new URLSearchParams();
+        if (estado) p.set('estado', estado);
+
+        const cuerpo = $('#tabla-mis').querySelector('tbody');
+        filaSkeleton(cuerpo, 5);
+
+        const res = await call('/mis-prestamos?' + p.toString());
+        cuerpo.innerHTML = '';
+        $('#sin-mis').hidden = res.data.length > 0;
+
+        res.data.forEach((prestamo) => {
+            const fila = document.createElement('tr');
+            fila.innerHTML =
+                '<td>' + (prestamo.libro ? prestamo.libro.titulo : '(libro eliminado)') + '</td>' +
+                '<td><span class="estado ' + prestamo.estado + '">' + (ETIQUETAS[prestamo.estado] || prestamo.estado) + '</span></td>' +
+                '<td>' + prestamo.fecha_prestamo + '</td>' +
+                '<td>' + prestamo.fecha_devolucion_estimada + '</td>';
+
+            if (prestamo.estado === 'activo' || prestamo.estado === 'vencido') {
+                const btn = document.createElement('button');
+                btn.textContent = 'Devolver';
+                btn.className = 'mini';
+                btn.addEventListener('click', async (e) => {
+                    e.stopPropagation();
+                    const titulo = prestamo.libro ? prestamo.libro.titulo : 'este libro';
+                    if (!confirm('¿Marcar «' + titulo + '» como devuelto?')) return;
+
+                    btn.disabled = true;
+                    try {
+                        await call('/prestamos/' + prestamo.id + '/devolver', { method: 'PUT' });
+                        toast('✅ Devolución registrada; stock repuesto.');
+                        cargarMisPrestamos();
+                        cargarDashboard();
+                        refrescarSelects();
+                    } catch (err) {
+                        toast('⚠️ ' + err.message, false);
+                        btn.disabled = false;
+                    }
+                });
+                const td = document.createElement('td');
+                td.appendChild(btn);
+                fila.appendChild(td);
+            } else {
+                fila.insertAdjacentHTML('beforeend', '<td class="muted">—</td>');
+            }
+
             cuerpo.appendChild(fila);
         });
     }
 
-    $('#buscar').addEventListener('input', () => {
-        clearTimeout(timerBusqueda);
-        timerBusqueda = setTimeout(cargarLibros, 300); // búsqueda en tiempo real con debounce
-    });
+    $('#f-estado-mis').addEventListener('change', cargarMisPrestamos);
 
     /* ============ Formulario de préstamo ============ */
     async function cargarSelects() {
@@ -194,6 +316,42 @@
             .join('');
     }
 
+    /* ============ Asistente / chatbot local ============ */
+    function burbuja(texto, quien) {
+        const div = document.createElement('div');
+        div.className = 'burbuja ' + quien;
+        div.textContent = texto;
+        $('#chat-log').appendChild(div);
+        $('#chat-log').scrollTop = $('#chat-log').scrollHeight;
+    }
+
+    $('#btn-chat').addEventListener('click', () => {
+        $('#chat').classList.remove('hidden');
+        $('#chat-input').focus();
+    });
+    $('#cerrar-chat').addEventListener('click', () => $('#chat').classList.add('hidden'));
+
+    $('#chat-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const mensaje = $('#chat-input').value.trim();
+        if (!mensaje) return;
+
+        burbuja(mensaje, 'user');
+        $('#chat-input').value = '';
+        burbuja('…', 'bot');
+
+        try {
+            const res = await call('/asistente', { method: 'POST', body: { mensaje } });
+            // sustituye el "…" por la respuesta real
+            const divs = $('#chat-log').querySelectorAll('.burbuja.bot');
+            divs[divs.length - 1].textContent = res.data.respuesta;
+            $('#chat-log').scrollTop = $('#chat-log').scrollHeight;
+        } catch (err) {
+            const divs = $('#chat-log').querySelectorAll('.burbuja.bot');
+            divs[divs.length - 1].textContent = '⚠️ ' + err.message;
+        }
+    });
+
     /* ============ Tabs ============ */
     function abrirTab(nombre) {
         document.querySelectorAll('.tab').forEach((t) =>
@@ -204,19 +362,43 @@
     }
 
     // Delegación de eventos: los clicks en .tab se manejan a nivel document,
-    // así los botones funcionan aunque se recargue/re-renderice el contenedor
+    // así los botones funcionan aunque el contenedor se recargue/re-renderice
     document.addEventListener('click', (e) => {
         const trigger = e.target.closest ? e.target.closest('.tab') : null;
-        if (trigger) abrirTab(trigger.dataset.tab);
+        if (trigger) {
+            abrirTab(trigger.dataset.tab);
+            if (trigger.dataset.tab === 'mis') cargarMisPrestamos();
+            if (trigger.dataset.tab === 'dashboard') cargarDashboard();
+        }
     });
 
     /* ============ Arranque ============ */
     async function iniciar() {
+        filaSkeleton($('#tabla-libros').querySelector('tbody'), 6);
         await cargarLibros();
         await cargarSelects();
+        cargarFiltroAutores();
         await cargarDashboard();
         $('#fecha_estimada').min = new Date().toISOString().slice(0, 10);
         $('#fecha_estimada').value = new Date(Date.now() + 14 * 86400000).toISOString().slice(0, 10);
+
+        // saludo inicial del asistente la primera vez
+        if (!$('#chat-log').children.length) {
+            burbuja('¡Hola! Soy el asistente de la biblioteca 🤖\nPregúntame por ejemplo: «¿cuántas copias quedan de El río oscuro?», «mis préstamos» o «catálogo».', 'bot');
+        }
+    }
+
+    async function cargarFiltroAutores() {
+        try {
+            const res = await call('/autores');
+            const sel = $('#f-autor');
+            res.data.forEach((a) => {
+                sel.insertAdjacentHTML(
+                    'beforeend',
+                    '<option value="' + a.id + '">' + a.nombre + ' ' + a.apellido + '</option>'
+                );
+            });
+        } catch (e) { /* si falla, el filtro de autor simplemente queda vacío */ }
     }
 
     $('#login-form').addEventListener('submit', (e) => {

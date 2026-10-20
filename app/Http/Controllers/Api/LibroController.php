@@ -21,20 +21,37 @@ class LibroController extends Controller
         $filtros = $request->validate([
             'titulo' => ['nullable', 'string', 'max:255'],
             'autor' => ['nullable', 'string', 'max:255'],
+            'autor_id' => ['nullable', 'integer', 'min:1'],
             'anio' => ['nullable', 'integer', 'min:1450', 'max:2100'],
             'disponibles' => ['nullable', 'boolean'],
+            'orden' => ['nullable', 'in:titulo_asc,titulo_desc,anio_asc,anio_desc,stock_desc'],
             'por_pagina' => ['nullable', 'integer', 'min:1', 'max:100'],
         ]);
+
+        $ordenes = [
+            'titulo_asc' => ['titulo', 'asc'],
+            'titulo_desc' => ['titulo', 'desc'],
+            'anio_asc' => ['anio_publicacion', 'asc'],
+            'anio_desc' => ['anio_publicacion', 'desc'],
+            'stock_desc' => ['stock_disponible', 'desc'],
+        ];
 
         $libros = Libro::query()
             ->with('autores')
             ->when($filtros['titulo'] ?? null, fn ($q, $t) => $q->whereRaw('LOWER(titulo) LIKE ?', ['%'.mb_strtolower($t, 'UTF-8').'%']))
             ->when($filtros['autor'] ?? null, fn ($q, $a) => $q->porAutor($a))
+            ->when($filtros['autor_id'] ?? null, fn ($q, $id) => $q->whereHas('autores', fn ($qa) => $qa->where('autores.id', $id)))
             ->when($filtros['anio'] ?? null, fn ($q, $a) => $q->delAnio((int) $a))
             ->when($filtros['disponibles'] ?? null, fn ($q, $d) => $d ? $q->disponibles() : $q)
-            ->orderBy('titulo')
+            ->orderBy(...$ordenes[$filtros['orden'] ?? 'titulo_asc'])
             ->paginate($filtros['por_pagina'] ?? 10)
             ->withQueryString();
+
+        $anios = Libro::query()
+            ->select('anio_publicacion')
+            ->distinct()
+            ->orderByDesc('anio_publicacion')
+            ->pluck('anio_publicacion');
 
         return response()->json([
             'data' => $libros->items(),
@@ -43,6 +60,7 @@ class LibroController extends Controller
                 'ultima_pagina' => $libros->lastPage(),
                 'por_pagina' => $libros->perPage(),
                 'total' => $libros->total(),
+                'anios' => $anios,
             ],
         ]);
     }

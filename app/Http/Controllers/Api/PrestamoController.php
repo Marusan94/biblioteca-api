@@ -42,6 +42,26 @@ class PrestamoController extends Controller
     }
 
     /**
+     * GET /api/mis-prestamos - los préstamos del usuario autenticado,
+     * con filtro opcional por estado (pestaña "Mis préstamos" del frontend).
+     */
+    public function misPrestamos(Request $request): JsonResponse
+    {
+        $estado = $request->validate(['estado' => ['nullable', 'in:activo,vencido,devuelto']])['estado'] ?? null;
+
+        $prestamos = Prestamo::query()
+            ->where('usuario_id', $request->user()->id)
+            ->with(['libro:id,titulo,isbn,anio_publicacion'])
+            ->when($estado, fn ($q) => $estado === 'vencido'
+                ? $q->vencidos()
+                : $q->where('estado', $estado))
+            ->orderByDesc('fecha_prestamo')
+            ->get(['id', 'usuario_id', 'libro_id', 'fecha_prestamo', 'fecha_devolucion_estimada', 'fecha_devolucion_real', 'estado']);
+
+        return response()->json(['data' => $prestamos]);
+    }
+
+    /**
      * POST /api/prestamos - valida todas las reglas de negocio (Parte 5.1).
      */
     public function store(StorePrestamoRequest $request, PrestamoService $service): JsonResponse
