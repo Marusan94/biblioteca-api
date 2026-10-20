@@ -90,6 +90,13 @@
     }
     $('#btn-salir').addEventListener('click', logout);
 
+    // El «Salir» solo tiene sentido con sesión activa: lo ocultamos si la pestaña
+    // principal (#app) está oculta (sin login).
+    function refrescaSalir() {
+        $('#btn-salir').classList.toggle('hidden', $('#app').classList.contains('hidden'));
+    }
+    refrescaSalir();
+
     /* ============ Libros: búsqueda + filtros combinables (5) ============ */
     let timerBusqueda = null;
 
@@ -443,6 +450,7 @@
 
     /* ============ Arranque ============ */
     async function iniciar() {
+        refrescaSalir();
         filaSkeleton($('#tabla-libros').querySelector('tbody'), 6);
         await cargarLibros();
         await cargarSelects();
@@ -487,6 +495,7 @@
             localStorage.removeItem('token');
             token = '';
             $('#login-box').classList.remove('hidden');
+            refrescaSalir();
         });
     } else {
         $('#login-box').classList.remove('hidden');
