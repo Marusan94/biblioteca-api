@@ -138,10 +138,10 @@
 </div>
 
 <!-- Asistente (chatbot local vía /api/asistente) -->
-<button id="btn-chat" class="chat-flotante" title="Asistente de la biblioteca">🤖</button>
+<button id="btn-chat" class="chat-flotante" title="Asistente de la biblioteca">🦉</button>
 <section id="chat" class="chat-panel hidden">
     <header>
-        <b>🤖 Asistente Biblioteca</b>
+        <b>🦉 Asistente</b>
         <button id="cerrar-chat" class="mini">✕</button>
     </header>
     <div id="chat-log"></div>
