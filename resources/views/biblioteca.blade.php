@@ -13,6 +13,7 @@
 <header>
     <h1>📚 Biblioteca</h1>
     <span id="quien" class="quien"></span>
+    <button id="btn-salir" class="mini" title="Cerrar sesión">🚪 Salir</button>
     <button id="btn-tema" class="mini" title="Cambiar tema">🌙</button>
 </header>
 
@@ -151,6 +152,6 @@
 </section>
 
 <div id="toast" class="hidden"></div>
-<script src="/js/app.js?v=6"></script>
+<script src="/js/app.js?v=7"></script>
 </body>
 </html>

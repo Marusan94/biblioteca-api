@@ -88,6 +88,7 @@
         localStorage.removeItem('token');
         location.reload();
     }
+    $('#btn-salir').addEventListener('click', logout);
 
     /* ============ Libros: búsqueda + filtros combinables (5) ============ */
     let timerBusqueda = null;
