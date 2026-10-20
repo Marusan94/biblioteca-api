@@ -1,7 +1,9 @@
 # Biblioteca API Laravel + PostgreSQL (+ frontend Blade/JS)
 
-Sistema de gestión de biblioteca API REST autenticada con Sanctum,
-reglas de negocio de préstamos y una interfaz web básica en Blade + JS vanilla.
+Sistema de gestión de biblioteca con Laravel y PostgreSQL. La API va
+autenticada con Sanctum y las reglas de préstamo viven en un servicio
+propio; el frontend es Blade + JS sin frameworks. Las decisiones de
+camino (y qué pagué por cada una) están en la sección «Decisiones».
 
 ## Instalación
 
@@ -70,13 +72,35 @@ Todos los entregables que no son codigo del proyecto estan en la carpeta [docs/]
 
 ## Interfaz (mejoras)
 
-- Pestaña «Mis préstamos» con badges de estado y botón «Devolver» (confirmación + toast).
-- Modal de detalle del libro: autores en orden de pivote, ISBN, año, stock y estado.
-- Filtros combinables de libros (autor + año + disponibilidad + ordenación).
-- Asistente integrado (chatbot local que consulta la BD real, sin servicios externos).
-- Modo oscuro con persistencia en `localStorage` y spinners de carga.
-- Dashboard con gráficos: préstamos por mes y top libros más prestados (Chart.js).
-- Descarga en `CSV` del historial en la pestaña «Mis préstamos».
+- Pestaña «Mis préstamos»: tabla con estados y devolución en línea (con confirmación).
+- Modal con el detalle de cada libro.
+- Filtros de libros combinables: autor, año, disponibilidad y orden.
+- Modo oscuro persistido en `localStorage`.
+- Dashboard con dos gráficas (préstamos por mes y top libros).
+- CSV del historial descargable desde «Mis préstamos».
+
+## Decisiones
+
+- Las reglas de negocio (stock, tope de 3 préstamos activos, usuarios inactivos)
+  están en `PrestamoService` y no en el controller. Para un CRUD pequeño es un
+  archivo extra, pero así las reutilizo sin duplicarlas desde el comando que
+  marca vencidos y desde el asistente.
+- El asistente funciona con reglas PHP (se interpreta el mensaje con regex) y no
+  con un LLM. Me alcanza para lo que se consulta en el chat (copias de un
+  título, catálogo, préstamos propios), pero es rígido: si la pregunta usa un
+  sinónimo que no contemplé, cae al "no entendí". Está anotado en un TODO.
+- PostgreSQL corre como servidor portable que arranca `iniciar.ps1`, en vez de
+  exigir un servicio instalado. Es cómodo en una máquina limpia, pero los
+  puertos son dinámicos: el script verifica que el puerto esté escuchando antes
+  de escribir `.env` (un port file viejo me mordió una vez).
+- Los gráficos del dashboard cargan Chart.js por CDN. Sin internet el dashboard
+  muestra solo las tarjetas y un aviso; preferí no incluir el bundle a mano.
+- Responder con Postman en vez de Swagger: la colección cubre los casos del
+  proyecto y no agrego dependencias nuevas.
+- Algunas líneas viejas del README tenían acentos dañados (edición por consola
+  con UTF-8 leído como latin-1). Ya está limpio, pero si ves algo raro, la
+  fuente de verdad es el código.
+
 
 ## Capturas (validación visual)
 

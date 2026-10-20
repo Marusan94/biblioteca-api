@@ -152,6 +152,6 @@
 </section>
 
 <div id="toast" class="hidden"></div>
-<script src="/js/app.js?v=9"></script>
+<script src="/js/app.js?v=10"></script>
 </body>
 </html>

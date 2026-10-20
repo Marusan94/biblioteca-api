@@ -10,11 +10,11 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 /**
- * Asistente / chatbot LOCAL del sistema (frontend → /api/asistente).
+ * Asistente / chatbot local del sistema (frontend → /api/asistente).
  *
  * No usa servicios externos: interpreta el mensaje con reglas hechas en
  * PHP y responde consultando la base de datos real (libros, préstamos,
- * usuarios). Mantiene todo el stack del examen: Laravel + PostgreSQL.
+ * usuarios). Mantiene todo el stack del proyecto: Laravel + PostgreSQL.
  */
 class AsistenteController extends Controller
 {
@@ -36,14 +36,15 @@ class AsistenteController extends Controller
 
     private function interpretar(string $m, Usuario $usuario): string
     {
+        // TODO: el matching es por frases exactas; con sinónimos o plurales
+        // que no imagine se cae al fallback de abajo.
         // Saludo / menú inicial
         if (preg_match('/(^|\s)(hola|buenas|hey|ayuda|menu|que puedes hacer|como funcionas)(\s|$)/', $m)) {
-            return "¡Hola! Soy el asistente de la biblioteca. Puedo ayudarte con:\n"
-                . "• «¿cuántas copias quedan de *título*?» → disponibilidad real\n"
-                . "• «catálogo» → resumen de libros y sin stock\n"
-                . "• «mis préstamos» → lo que tienes activo / vencido\n"
-                . "• «usuarios» → resumen de usuarios\n"
-                . "• «préstamos activos» → estado global de préstamos";
+            return "Puedo responder sobre:\n"
+                . "- copias de un libro: «cuántas quedan de El río oscuro»\n"
+                . "- catálogo: cuántos libros hay y cuáles sin stock\n"
+                . "- «mis préstamos»: los tuyos, activos y vencidos\n"
+                . "- usuarios registrados y estado global de préstamos";
         }
 
         // Mis préstamos (los del usuario autenticado)
@@ -61,8 +62,8 @@ class AsistenteController extends Controller
             $total = Usuario::count();
             $activos = Usuario::where('estado', 'activo')->count();
 
-            return "👥 Hay {$total} usuarios registrados y {$activos} activos. "
-                . "Los usuarios inactivos no pueden pedir préstamos nuevos.";
+            return "Usuarios registrados: {$total} (activos: {$activos}). "
+                . "Los inactivos no pueden pedir préstamos nuevos.";
         }
 
         // Catálogo general
@@ -70,8 +71,8 @@ class AsistenteController extends Controller
             $total = Libro::count();
             $sinStock = Libro::where('stock_disponible', 0)->count();
 
-            return "📚 Hay {$total} libros en el catálogo; {$sinStock} están sin stock. "
-                . "Usa la pestaña «Libros» para filtrar por autor, año y disponibilidad.";
+            return "Libros en catálogo: {$total}; sin stock: {$sinStock}. "
+                . "En la pestaña «Libros» se pueden filtrar por autor, año y disponibilidad.";
         }
 
         // Disponibilidad de un libro puntual
@@ -79,8 +80,8 @@ class AsistenteController extends Controller
             return $this->disponibilidad($m);
         }
 
-        return "No entendí esa consulta. Prueba con «¿cuántas copias quedan de El río oscuro?», "
-            . "«catálogo», «mis préstamos» o «ayuda» para ver todo lo que puedo hacer.";
+        return "No entendí esa consulta. Prueba con «cuántas copias quedan de El río oscuro», "
+            . "«catálogo», «mis préstamos» o «ayuda».";
     }
 
     private function misPrestamos(Usuario $usuario): string
@@ -98,16 +99,16 @@ class AsistenteController extends Controller
             return 'No tienes préstamos registrados todavía.';
         }
 
-        $lineas = "📋 Tienes {$activos->count()} préstamo(s) activo(s)"
-            . ($vencidos->count() ? " y {$vencidos->count()} vencido(s)." : '.')
+        $lineas = "Préstamos activos: {$activos->count()}"
+            . ($vencidos->count() ? " / vencidos: {$vencidos->count()}." : '.')
             . "\n";
 
         foreach ($activos as $p) {
-            $lineas .= "• {$p->libro->titulo} (devolver antes: {$p->fecha_devolucion_estimada})\n";
+            $lineas .= "- {$p->libro->titulo} (devolver antes: {$p->fecha_devolucion_estimada})\n";
         }
 
         foreach ($vencidos as $p) {
-            $lineas .= "⚠️ {$p->libro->titulo} — VENCIDO (desde {$p->fecha_devolucion_estimada})\n";
+            $lineas .= "- {$p->libro->titulo} — VENCIDO (desde {$p->fecha_devolucion_estimada})\n";
         }
 
         return rtrim($lineas);
@@ -119,19 +120,19 @@ class AsistenteController extends Controller
         $vencidos = Prestamo::vencidos()->count();
         $devueltos = Prestamo::where('estado', 'devuelto')->count();
 
-        return "📖 Préstamos: {$activos} activos, {$vencidos} vencidos y {$devueltos} devueltos. "
-            . "El máximo por usuario es 3 activos y las devoluciones reponen el stock automáticamente.";
+        return "Préstamos: {$activos} activos, {$vencidos} vencidos y {$devueltos} devueltos. "
+            . "Máximo 3 activos por usuario; devolver repone el stock.";
     }
 
     private function disponibilidad(string $m): string
     {
         // Quita palabras de relleno para quedarnos con el título buscado
         $tokens = collect(preg_split('/[^a-z0-9áéíóúñ]+/', $m, -1, PREG_SPLIT_NO_EMPTY))
-            ->reject(fn ($t) => in_array($t, ['cuantas', 'cuantos', 'copias', 'quedan', 'quedan', 'hay', 'del', 'de', 'la', 'el', 'los', 'las', 'un', 'una', 'en', 'el', 'libro', 'disponibles', 'disponible', 'stock', 'esta', 'existe', 'se', 'puede', 'pedir', 'para', 'como']))
+            ->reject(fn ($t) => in_array($t, ['cuantas', 'cuantos', 'copias', 'quedan', 'hay', 'del', 'de', 'la', 'el', 'los', 'las', 'un', 'una', 'en', 'libro', 'disponibles', 'disponible', 'stock', 'esta', 'existe', 'se', 'puede', 'pedir', 'para', 'como']))
             ->values();
 
         if ($tokens->isEmpty()) {
-            return '¿De qué libro quieres saber la disponibilidad? Escribe, por ejemplo: «¿cuántas copias quedan de El río oscuro?»';
+            return '¿De qué libro quieres saber la disponibilidad? Escribe, por ejemplo: «cuántas copias quedan de El río oscuro».';
         }
 
         $libros = Libro::query()->with('autores')->where(function ($q) use ($tokens) {
@@ -147,7 +148,7 @@ class AsistenteController extends Controller
         return $libros->map(function ($libro) {
             $stock = $libro->stock_disponible;
 
-            return "📗 {$libro->titulo} — ".($stock > 0 ? "{$stock} copia(s) disponible(s)" : 'sin stock disponible');
+            return "{$libro->titulo}: ".($stock > 0 ? "{$stock} copia(s) disponible(s)" : 'sin stock');
         })->implode("\n");
     }
 }

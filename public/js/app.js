@@ -313,6 +313,8 @@
     let chartMeses = null;
     let chartTop = null;
 
+    // TODO: Chart.js va por CDN; si el dashboard tiene que funcionar sin
+    // internet, toca bajar el bundle a local.
     function dibujarGraficos(g) {
         if (!window.Chart) {
             $('#sin-graficos').hidden = false;
@@ -464,7 +466,7 @@
 
         // saludo inicial del asistente la primera vez
         if (!$('#chat-log').children.length) {
-            burbuja('¡Hola! Soy el asistente de la biblioteca 🤖\nPregúntame por ejemplo: «¿cuántas copias quedan de El río oscuro?», «mis préstamos» o «catálogo».', 'bot');
+            burbuja('Puedo atender preguntas como: cuantas copias quedan de un libro, catalogo, mis prestamos.', 'bot');
         }
     }
 
@@ -504,3 +506,6 @@
         $('#login-box').classList.remove('hidden');
     }
 })();
+
+// Si cambio este js y el navegador insiste con la version vieja, subo a mano
+// el ?v= de <script src="app.js..."> en biblioteca.blade.php (cache-buster artesanal).
