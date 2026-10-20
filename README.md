@@ -97,3 +97,11 @@ La carpeta [docs/capturas/](docs/capturas/) contiene las pantallas de la app par
 
 El diagrama entidad-relación está en [docs/01_sql_y_diagramas/diagrama_er.png](docs/01_sql_y_diagramas/diagrama_er.png).
 
+## Autor
+
+Santiago Marulanda Leguizamo
+Desarrollador de Software | Datos e IA aplicada
+
+- GitHub: https://github.com/Marusan94
+- Email: santiago.marulandal@udea.edu.co
+- Portfolio: https://capidevo.vercel.app/
