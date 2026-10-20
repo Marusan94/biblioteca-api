@@ -1,0 +1,57 @@
+-- Diagrama ER en Mermaid (fuente editable)
+-- Render: https://mermaid.live
+erDiagram
+    AUTORES ||--o{ AUTOR_LIBRO : "escribe"
+    LIBROS ||--o{ AUTOR_LIBRO : "es escrito por"
+    LIBROS ||--o{ PRESTAMOS : "se presta"
+    USUARIOS ||--o{ PRESTAMOS : "realiza"
+
+    AUTORES {
+        bigint id PK
+        varchar nombre
+        varchar apellido
+        date fecha_nacimiento
+        varchar nacionalidad
+        text biografia
+        timestamptz created_at
+        timestamptz updated_at
+    }
+    LIBROS {
+        bigint id PK
+        varchar titulo
+        varchar isbn UK
+        int anio_publicacion
+        int numero_paginas
+        text descripcion
+        int stock_disponible
+        timestamptz deleted_at
+        timestamptz created_at
+        timestamptz updated_at
+    }
+    USUARIOS {
+        bigint id PK
+        varchar nombre
+        varchar email UK
+        varchar telefono
+        timestamptz fecha_registro
+        estado_usuario estado
+        timestamptz created_at
+        timestamptz updated_at
+    }
+    PRESTAMOS {
+        bigint id PK
+        bigint libro_id FK
+        bigint usuario_id FK
+        timestamptz fecha_prestamo
+        date fecha_devolucion_estimada
+        timestamptz fecha_devolucion_real
+        estado_prestamo estado
+        timestamptz created_at
+        timestamptz updated_at
+    }
+    AUTOR_LIBRO {
+        bigint id PK
+        bigint autor_id FK
+        bigint libro_id FK
+        int orden_autor
+    }

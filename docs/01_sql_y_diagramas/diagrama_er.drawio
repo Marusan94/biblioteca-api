@@ -1,0 +1,125 @@
+<mxfile host="app.diagrams.net" agent="sisyphus" version="24.7.8" type="device">
+  <diagram id="er-biblioteca" name="Diagrama ER Biblioteca">
+    <mxGraphModel dx="1300" dy="860" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1150" pageHeight="780" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <mxCell id="titulo" value="Biblioteca — Diagrama Entidad-Relación" style="text;html=1;align=left;verticalAlign=middle;fontSize=16;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="60" y="30" width="500" height="24" as="geometry" />
+        </mxCell>
+
+        <!-- autores -->
+        <mxCell id="t1" value="autores" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=24;horizontalStack=0;resizeParent=1;resizeLast=0;collapsible=0;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;swimlaneFillColor=#ffffff;" vertex="1" parent="1">
+          <mxGeometry x="80" y="140" width="260" height="200" as="geometry" />
+        </mxCell>
+        <mxCell id="t1_r1" value="id (PK)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontSize=12;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="t1"><mxGeometry y="24" width="260" height="22" as="geometry" /></mxCell>
+        <mxCell id="t1_r2" value="nombre" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontSize=12;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="t1"><mxGeometry y="46" width="260" height="22" as="geometry" /></mxCell>
+        <mxCell id="t1_r3" value="apellido" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontSize=12;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="t1"><mxGeometry y="68" width="260" height="22" as="geometry" /></mxCell>
+        <mxCell id="t1_r4" value="fecha_nacimiento" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontSize=12;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="t1"><mxGeometry y="90" width="260" height="22" as="geometry" /></mxCell>
+        <mxCell id="t1_r5" value="nacionalidad" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontSize=12;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="t1"><mxGeometry y="112" width="260" height="22" as="geometry" /></mxCell>
+        <mxCell id="t1_r6" value="biografia" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontSize=12;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="t1"><mxGeometry y="134" width="260" height="22" as="geometry" /></mxCell>
+        <mxCell id="t1_r7" value="created_at" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontSize=12;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="t1"><mxGeometry y="156" width="260" height="22" as="geometry" /></mxCell>
+        <mxCell id="t1_r8" value="updated_at" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontSize=12;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="t1"><mxGeometry y="178" width="260" height="22" as="geometry" /></mxCell>
+
+        <!-- libros -->
+        <mxCell id="t2" value="libros" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=24;horizontalStack=0;resizeParent=1;resizeLast=0;collapsible=0;html=1;fillColor=#d5e8d4;strokeColor=#82b366;swimlaneFillColor=#ffffff;" vertex="1" parent="1">
+          <mxGeometry x="450" y="100" width="300" height="244" as="geometry" />
+        </mxCell>
+        <mxCell id="t2_r1" value="id (PK)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontSize=12;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="t2"><mxGeometry y="24" width="300" height="22" as="geometry" /></mxCell>
+        <mxCell id="t2_r2" value="titulo" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontSize=12;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="t2"><mxGeometry y="46" width="300" height="22" as="geometry" /></mxCell>
+        <mxCell id="t2_r3" value="isbn (único)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontSize=12;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="t2"><mxGeometry y="68" width="300" height="22" as="geometry" /></mxCell>
+        <mxCell id="t2_r4" value="anio_publicacion" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontSize=12;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="t2"><mxGeometry y="90" width="300" height="22" as="geometry" /></mxCell>
+        <mxCell id="t2_r5" value="numero_paginas" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontSize=12;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="t2"><mxGeometry y="112" width="300" height="22" as="geometry" /></mxCell>
+        <mxCell id="t2_r6" value="descripcion" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontSize=12;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="t2"><mxGeometry y="134" width="300" height="22" as="geometry" /></mxCell>
+        <mxCell id="t2_r7" value="stock_disponible" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontSize=12;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="t2"><mxGeometry y="156" width="300" height="22" as="geometry" /></mxCell>
+        <mxCell id="t2_r8" value="deleted_at (soft delete)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontSize=12;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="t2"><mxGeometry y="178" width="300" height="22" as="geometry" /></mxCell>
+        <mxCell id="t2_r9" value="created_at" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontSize=12;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="t2"><mxGeometry y="200" width="300" height="22" as="geometry" /></mxCell>
+        <mxCell id="t2_r10" value="updated_at" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontSize=12;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="t2"><mxGeometry y="222" width="300" height="22" as="geometry" /></mxCell>
+
+        <!-- usuarios -->
+        <mxCell id="t3" value="usuarios" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=24;horizontalStack=0;resizeParent=1;resizeLast=0;collapsible=0;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;swimlaneFillColor=#ffffff;" vertex="1" parent="1">
+          <mxGeometry x="900" y="140" width="280" height="200" as="geometry" />
+        </mxCell>
+        <mxCell id="t3_r1" value="id (PK)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontSize=12;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="t3"><mxGeometry y="24" width="280" height="22" as="geometry" /></mxCell>
+        <mxCell id="t3_r2" value="nombre" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontSize=12;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="t3"><mxGeometry y="46" width="280" height="22" as="geometry" /></mxCell>
+        <mxCell id="t3_r3" value="email (único)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontSize=12;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="t3"><mxGeometry y="68" width="280" height="22" as="geometry" /></mxCell>
+        <mxCell id="t3_r4" value="telefono" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontSize=12;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="t3"><mxGeometry y="90" width="280" height="22" as="geometry" /></mxCell>
+        <mxCell id="t3_r5" value="fecha_registro" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontSize=12;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="t3"><mxGeometry y="112" width="280" height="22" as="geometry" /></mxCell>
+        <mxCell id="t3_r6" value="estado (activo / inactivo)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontSize=12;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="t3"><mxGeometry y="134" width="280" height="22" as="geometry" /></mxCell>
+        <mxCell id="t3_r7" value="created_at" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontSize=12;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="t3"><mxGeometry y="156" width="280" height="22" as="geometry" /></mxCell>
+        <mxCell id="t3_r8" value="updated_at" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontSize=12;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="t3"><mxGeometry y="178" width="280" height="22" as="geometry" /></mxCell>
+
+        <!-- autor_libro -->
+        <mxCell id="t4" value="autor_libro (tabla pivote)" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=24;horizontalStack=0;resizeParent=1;resizeLast=0;collapsible=0;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;swimlaneFillColor=#ffffff;" vertex="1" parent="1">
+          <mxGeometry x="120" y="500" width="260" height="112" as="geometry" />
+        </mxCell>
+        <mxCell id="t4_r1" value="id (PK)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontSize=12;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="t4"><mxGeometry y="24" width="260" height="22" as="geometry" /></mxCell>
+        <mxCell id="t4_r2" value="autor_id (FK → autores)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontSize=12;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="t4"><mxGeometry y="46" width="260" height="22" as="geometry" /></mxCell>
+        <mxCell id="t4_r3" value="libro_id (FK → libros)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontSize=12;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="t4"><mxGeometry y="68" width="260" height="22" as="geometry" /></mxCell>
+        <mxCell id="t4_r4" value="orden_autor" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontSize=12;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="t4"><mxGeometry y="90" width="260" height="22" as="geometry" /></mxCell>
+
+        <!-- prestamos -->
+        <mxCell id="t5" value="prestamos" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=24;horizontalStack=0;resizeParent=1;resizeLast=0;collapsible=0;html=1;fillColor=#fff2cc;strokeColor=#d6b656;swimlaneFillColor=#ffffff;" vertex="1" parent="1">
+          <mxGeometry x="680" y="500" width="320" height="222" as="geometry" />
+        </mxCell>
+        <mxCell id="t5_r1" value="id (PK)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontSize=12;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="t5"><mxGeometry y="24" width="320" height="22" as="geometry" /></mxCell>
+        <mxCell id="t5_r2" value="libro_id (FK → libros)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontSize=12;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="t5"><mxGeometry y="46" width="320" height="22" as="geometry" /></mxCell>
+        <mxCell id="t5_r3" value="usuario_id (FK → usuarios)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontSize=12;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="t5"><mxGeometry y="68" width="320" height="22" as="geometry" /></mxCell>
+        <mxCell id="t5_r4" value="fecha_prestamo" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontSize=12;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="t5"><mxGeometry y="90" width="320" height="22" as="geometry" /></mxCell>
+        <mxCell id="t5_r5" value="fecha_devolucion_estimada" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontSize=12;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="t5"><mxGeometry y="112" width="320" height="22" as="geometry" /></mxCell>
+        <mxCell id="t5_r6" value="fecha_devolucion_real" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontSize=12;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="t5"><mxGeometry y="134" width="320" height="22" as="geometry" /></mxCell>
+        <mxCell id="t5_r7" value="estado (activo / devuelto / vencido)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontSize=12;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="t5"><mxGeometry y="156" width="320" height="22" as="geometry" /></mxCell>
+        <mxCell id="t5_r8" value="created_at" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontSize=12;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="t5"><mxGeometry y="178" width="320" height="22" as="geometry" /></mxCell>
+        <mxCell id="t5_r9" value="updated_at" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontSize=12;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="t5"><mxGeometry y="200" width="320" height="22" as="geometry" /></mxCell>
+
+        <!-- líneas -->
+        <mxCell id="e1" value="escribe" style="edgeStyle=none;endArrow=none;html=1;strokeColor=#545454;strokeWidth=1;fontSize=11;fontStyle=2;" edge="1" parent="1" source="t1" target="t4">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e1_1" value="1" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=12;fontColor=#333333;" vertex="1" connectable="0" parent="e1">
+          <mxGeometry x="-0.75" relative="1" as="geometry"><mxPoint as="offset" x="-12" /></mxGeometry>
+        </mxCell>
+        <mxCell id="e1_2" value="N" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=12;fontColor=#333333;" vertex="1" connectable="0" parent="e1">
+          <mxGeometry x="0.75" relative="1" as="geometry"><mxPoint as="offset" x="12" /></mxGeometry>
+        </mxCell>
+
+        <mxCell id="e2" value="es escrito por" style="edgeStyle=none;endArrow=none;html=1;strokeColor=#545454;strokeWidth=1;fontSize=11;fontStyle=2;" edge="1" parent="1" source="t4" target="t2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e2_1" value="N" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=12;fontColor=#333333;" vertex="1" connectable="0" parent="e2">
+          <mxGeometry x="-0.75" relative="1" as="geometry"><mxPoint as="offset" x="-12" /></mxGeometry>
+        </mxCell>
+        <mxCell id="e2_2" value="1" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=12;fontColor=#333333;" vertex="1" connectable="0" parent="e2">
+          <mxGeometry x="0.75" relative="1" as="geometry"><mxPoint as="offset" x="12" /></mxGeometry>
+        </mxCell>
+
+        <mxCell id="e3" value="se presta" style="edgeStyle=none;endArrow=none;html=1;strokeColor=#545454;strokeWidth=1;fontSize=11;fontStyle=2;" edge="1" parent="1" source="t2" target="t5">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e3_1" value="1" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=12;fontColor=#333333;" vertex="1" connectable="0" parent="e3">
+          <mxGeometry x="-0.75" relative="1" as="geometry"><mxPoint as="offset" x="-12" /></mxGeometry>
+        </mxCell>
+        <mxCell id="e3_2" value="N" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=12;fontColor=#333333;" vertex="1" connectable="0" parent="e3">
+          <mxGeometry x="0.75" relative="1" as="geometry"><mxPoint as="offset" x="12" /></mxGeometry>
+        </mxCell>
+
+        <mxCell id="e4" value="realiza" style="edgeStyle=none;endArrow=none;html=1;strokeColor=#545454;strokeWidth=1;fontSize=11;fontStyle=2;" edge="1" parent="1" source="t3" target="t5">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e4_1" value="1" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=12;fontColor=#333333;" vertex="1" connectable="0" parent="e4">
+          <mxGeometry x="-0.75" relative="1" as="geometry"><mxPoint as="offset" x="12" /></mxGeometry>
+        </mxCell>
+        <mxCell id="e4_2" value="N" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=12;fontColor=#333333;" vertex="1" connectable="0" parent="e4">
+          <mxGeometry x="0.75" relative="1" as="geometry"><mxPoint as="offset" x="-12" /></mxGeometry>
+        </mxCell>
+
+        <!-- notas -->
+        <mxCell id="notas" value="Reglas:&#10;- un préstamo es de un libro para un usuario&#10;- un libro puede tener varios autores y un autor varios libros (tabla autor_libro)&#10;- solo usuarios activos pueden pedir préstamos (máx. 3 activos)&#10;- el stock baja al prestar y sube al devolver" style="text;html=0;whiteSpace=wrap;align=left;verticalAlign=top;spacing=10;fontSize=11;fontColor=#333333;fillColor=#ffffff;strokeColor=#999999;" vertex="1" parent="1">
+          <mxGeometry x="60" y="650" width="480" height="90" as="geometry" />
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

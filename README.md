@@ -46,3 +46,13 @@ solo usuarios activos prestan; vencidos (+15 días) se marcan automáticamente.
 Front: `http://localhost:8000` (búsqueda en tiempo real, préstamos y dashboard).
 
 Postman: colección `Parte 7 — Postman` en la carpeta superior.
+
+## Entregables del examen (docs/)
+
+Todos los entregables que no son codigo del proyecto estan en la carpeta [docs/](docs/):
+
+- docs/01_sql_y_diagramas/   -> Parte 1: SQL + diagrama ER (draw.io, mermaid, HTML, PNG)
+- docs/02..06_*/             -> Partes 2-6: README por parte con las rutas exactas del codigo en el proyecto
+- docs/07_postman/           -> Parte 7: coleccion Postman + environment (importar en la app)
+- docs/08_teoria/            -> Respuestas teoricas en Word (.docx) y Markdown (.md)
+- docs/Informe_Biblioteca.pdf -> Documento global con la explicacion de cada punto

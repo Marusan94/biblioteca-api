@@ -1,0 +1,495 @@
+{
+  "info": {
+    "name": "Biblioteca API",
+    "_postman_id": "b1bl10-0000-4api-9000-parte7test",
+    "description": "Colección Postman para la API de Biblioteca (Parte 7).\n\n1. Ejecutar `POST login` primero: los tests guardan el token automáticamente.\n2. Todos los demás endpoints usan `Authorization: Bearer {{token}}`.\n\nVariables: base_url, token, demo_email, demo_password, libro_id, usuario_id, usuario_limite_id, libro_sin_stock_id.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "01 Auth (Sanctum)",
+      "item": [
+        {
+          "name": "Login OK (200)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('estado 200', function () { pm.response.to.have.status(200); });",
+                  "var json = pm.response.json();",
+                  "pm.test('devuelve token', function () { pm.expect(json.token).to.be.a('string'); });",
+                  "pm.test('devuelve usuario', function () { pm.expect(json.user.email).to.eql(pm.environment.get('demo_email')); });",
+                  "pm.environment.set('token', json.token);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{demo_email}}\",\n  \"password\": \"{{demo_password}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/login",
+              "host": ["{{base_url}}"],
+              "path": ["login"]
+            },
+            "description": "Request: {\"email\":\"usuario1@example.com\",\"password\":\"password\"}\nResponse 200: {\"token\":\"1|x9...\",\"user\":{\"id\":1,\"nombre\":\"Usuario 1\",\"email\":\"usuario1@example.com\"}}"
+          }
+        },
+        {
+          "name": "Login con credenciales inválidas (401)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('estado 401', function () { pm.response.to.have.status(401); });",
+                  "pm.test('mensaje de error', function () { pm.expect(pm.response.json().message).to.eql('Credenciales inválidas.'); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"usuario1@example.com\",\n  \"password\": \"incorrecta\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/login",
+              "host": ["{{base_url}}"],
+              "path": ["login"]
+            },
+            "description": "Caso de error: contraseña incorrecta.\nResponse 401: {\"message\":\"Credenciales inválidas.\"}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "02 Libros",
+      "item": [
+        {
+          "name": "Listar libros (200)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('estado 200', function () { pm.response.to.have.status(200); });",
+                  "var json = pm.response.json();",
+                  "pm.test('data es un array', function () { pm.expect(json.data).to.be.an('array'); });",
+                  "pm.test('incluye paginación', function () { pm.expect(json.meta).to.have.property('total'); });",
+                  "if (json.data.length > 0) { pm.environment.set('libro_id', json.data[0].id); }"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }] },
+            "method": "GET",
+            "header": [{ "key": "Accept", "value": "application/json" }],
+            "url": {
+              "raw": "{{base_url}}/libros?titulo=&autor=&anio=&disponibles=&por_pagina=10",
+              "host": ["{{base_url}}"],
+              "path": ["libros"],
+              "query": [
+                { "key": "titulo", "value": "", "description": "Búsqueda parcial por título" },
+                { "key": "autor", "value": "", "description": "Id o nombre del autor" },
+                { "key": "anio", "value": "", "description": "Año de publicación" },
+                { "key": "disponibles", "value": "", "description": "1 = solo con stock" },
+                { "key": "por_pagina", "value": "10" }
+              ]
+            },
+            "description": "Request: GET /api/libros?titulo=rio\nResponse 200: {\"data\":[{\"id\":1,\"titulo\":\"El río oscuro\",\"autores\":[...]}],\"meta\":{\"pagina_actual\":1,\"total\":20,...}}"
+          }
+        },
+        {
+          "name": "Obtener libro con autores (200)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('estado 200', function () { pm.response.to.have.status(200); });",
+                  "var json = pm.response.json();",
+                  "pm.test('trae autores', function () { pm.expect(json.data.autores).to.be.an('array'); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }] },
+            "method": "GET",
+            "header": [{ "key": "Accept", "value": "application/json" }],
+            "url": {
+              "raw": "{{base_url}}/libros/{{libro_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["libros", "{{libro_id}}"]
+            },
+            "description": "Response 200: {\"data\":{\"id\":1,\"titulo\":\"...\",\"autores\":[{\"pivot\":{\"orden_autor\":1}}],\"prestamos_count\":0}}"
+          }
+        },
+        {
+          "name": "Crear libro (201)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('estado 201', function () { pm.response.to.have.status(201); });",
+                  "pm.test('devuelve el libro creado', function () { pm.expect(pm.response.json().data.titulo).to.eql('Libro de Postman'); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }] },
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"titulo\": \"Libro de Postman\",\n  \"isbn\": \"978-9-99999-999-9\",\n  \"anio_publicacion\": 2025,\n  \"numero_paginas\": 150,\n  \"stock_disponible\": 3,\n  \"autores\": [1]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/libros",
+              "host": ["{{base_url}}"],
+              "path": ["libros"]
+            },
+            "description": "Request: {\"titulo\":\"...\",\"isbn\":\"...\",\"anio_publicacion\":2025,\"stock_disponible\":3,\"autores\":[1]}\nResponse 201: data con autores ordenados por orden_autor."
+          }
+        },
+        {
+          "name": "Crear libro sin título (422)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('estado 422', function () { pm.response.to.have.status(422); });",
+                  "pm.test('errores de validación', function () { pm.expect(pm.response.json().errors).to.have.property('titulo'); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }] },
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"anio_publicacion\": 2025,\n  \"stock_disponible\": 3,\n  \"autores\": [1]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/libros",
+              "host": ["{{base_url}}"],
+              "path": ["libros"]
+            },
+            "description": "Response 422: {\"message\":\"...\",\"errors\":{\"titulo\":[\"El campo titulo es obligatorio.\"]}}"
+          }
+        },
+        {
+          "name": "Actualizar libro (200)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('estado 200', function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }] },
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"stock_disponible\": 5,\n  \"descripcion\": \"Actualizado desde Postman\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/libros/{{libro_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["libros", "{{libro_id}}"]
+            },
+            "description": "PATCH/PUT parcial: solo campos enviados se actualizan."
+          }
+        },
+        {
+          "name": "Eliminar libro - soft delete (200)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('estado 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('mensaje soft delete', function () { pm.expect(pm.response.json().message).to.include('soft delete'); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }] },
+            "method": "DELETE",
+            "header": [{ "key": "Accept", "value": "application/json" }],
+            "url": {
+              "raw": "{{base_url}}/libros/{{libro_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["libros", "{{libro_id}}"]
+            },
+            "description": "Response 200: {\"message\":\"Libro eliminado (soft delete).\"}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "03 Préstamos",
+      "item": [
+        {
+          "name": "Listar préstamos (200)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('estado 200', function () { pm.response.to.have.status(200); });",
+                  "var json = pm.response.json();",
+                  "pm.test('data es un array', function () { pm.expect(json.data).to.be.an('array'); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }] },
+            "method": "GET",
+            "header": [{ "key": "Accept", "value": "application/json" }],
+            "url": {
+              "raw": "{{base_url}}/prestamos?estado=",
+              "host": ["{{base_url}}"],
+              "path": ["prestamos"],
+              "query": [{ "key": "estado", "value": "", "description": "activo | vencido | devuelto" }]
+            },
+            "description": "Response 200: cada item trae libro y usuario en eager loading."
+          }
+        },
+        {
+          "name": "Crear préstamo OK (201)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('estado 201', function () { pm.response.to.have.status(201); });",
+                  "pm.test('estado del préstamo es activo', function () { pm.expect(pm.response.json().data.estado).to.eql('activo'); });",
+                  "if (pm.response.code === 201) { pm.environment.set('prestamo_id', pm.response.json().data.id); }"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }] },
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"libro_id\": {{libro_id}},\n  \"usuario_id\": {{usuario_id}},\n  \"fecha_devolucion_estimada\": \"{{fecha_estimada}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/prestamos",
+              "host": ["{{base_url}}"],
+              "path": ["prestamos"]
+            },
+            "description": "Request: {\"libro_id\":1,\"usuario_id\":8,\"fecha_devolucion_estimada\":\"2026-11-02\"}\nResponse 201: préstamo con libro y usuario."
+          }
+        },
+        {
+          "name": "Crear préstamo sin stock (409)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('estado 409', function () { pm.response.to.have.status(409); });",
+                  "pm.test('mensaje de negocio', function () { pm.expect(pm.response.json().message).to.include('stock'); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }] },
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"libro_id\": {{libro_sin_stock_id}},\n  \"usuario_id\": {{usuario_id}},\n  \"fecha_devolucion_estimada\": \"{{fecha_estimada}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/prestamos",
+              "host": ["{{base_url}}"],
+              "path": ["prestamos"]
+            },
+            "description": "Regla 5.1: no se presta un libro sin stock.\nResponse 409: {\"message\":\"No hay stock disponible del libro '...'.\"}"
+          }
+        },
+        {
+          "name": "Crear préstamo a un usuario con 3 activos (409)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('estado 409', function () { pm.response.to.have.status(409); });",
+                  "pm.test('mensaje de límite', function () { pm.expect(pm.response.json().message).to.include('3 préstamos activos'); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }] },
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"libro_id\": {{libro_id}},\n  \"usuario_id\": {{usuario_limite_id}},\n  \"fecha_devolucion_estimada\": \"{{fecha_estimada}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/prestamos",
+              "host": ["{{base_url}}"],
+              "path": ["prestamos"]
+            },
+            "description": "Regla 5.1: máximo 3 préstamos activos por usuario.\nResponse 409: {\"message\":\"El usuario ya tiene 3 préstamos activos...\"}"
+          }
+        },
+        {
+          "name": "Devolver préstamo (200)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('estado 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('quedó devuelto', function () { pm.expect(pm.response.json().data.estado).to.eql('devuelto'); });",
+                  "pm.test('fecha real registrada', function () { pm.expect(pm.response.json().data.fecha_devolucion_real).to.be.a('string'); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }] },
+            "method": "PUT",
+            "header": [{ "key": "Accept", "value": "application/json" }],
+            "url": {
+              "raw": "{{base_url}}/prestamos/{{prestamo_id}}/devolver",
+              "host": ["{{base_url}}"],
+              "path": ["prestamos", "{{prestamo_id}}", "devolver"]
+            },
+            "description": "Response 200: {\"data\":{\"estado\":\"devuelto\",\"fecha_devolucion_real\":\"2026-10-19T...\"}}"
+          }
+        },
+        {
+          "name": "Devolver préstamo ya devuelto (409)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('estado 409', function () { pm.response.to.have.status(409); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }] },
+            "method": "PUT",
+            "header": [{ "key": "Accept", "value": "application/json" }],
+            "url": {
+              "raw": "{{base_url}}/prestamos/{{prestamo_id}}/devolver",
+              "host": ["{{base_url}}"],
+              "path": ["prestamos", "{{prestamo_id}}", "devolver"]
+            },
+            "description": "Error de negocio: no se puede devolver dos veces.\nResponse 409: {\"message\":\"El préstamo ya fue devuelto.\"}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "04 Dashboard",
+      "item": [
+        {
+          "name": "Estadísticas (200)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('estado 200', function () { pm.response.to.have.status(200); });",
+                  "var json = pm.response.json();",
+                  "pm.test('métricas del dashboard', function () {",
+                  "  pm.expect(json.data).to.have.property('total_libros');",
+                  "  pm.expect(json.data).to.have.property('prestamos_activos');",
+                  "  pm.expect(json.data).to.have.property('prestamos_vencidos');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }] },
+            "method": "GET",
+            "header": [{ "key": "Accept", "value": "application/json" }],
+            "url": {
+              "raw": "{{base_url}}/estadisticas",
+              "host": ["{{base_url}}"],
+              "path": ["estadisticas"]
+            },
+            "description": "Response 200: {\"data\":{\"total_libros\":20,\"libros_sin_stock\":3,\"prestamos_activos\":6,...}}"
+          }
+        }
+      ]
+    }
+  ]
+}
